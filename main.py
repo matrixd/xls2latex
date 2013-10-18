@@ -1,14 +1,15 @@
 import xlrd
 
-xls = 'test/1.xls'
-
-b = xlrd.open_workbook(xls)
-
-
-def create_table(rows, **kwargs):
+def create_table(kwargs):
+    """
+    method for creating latex code
+    it returns string
+    kwargs are = rows, left, right, top, bottom
+    """
     table = "\\begin{tabular}{ |"
     width = kwargs.get('right')-kwargs.get('left')+1
     height = kwargs.get('bottom')-kwargs.get('top')
+    rows = kwargs.get('rows')
     for i in range(width):
         table += ' c | '
     table += '}\n   \\hline '
@@ -37,6 +38,7 @@ def create_table(rows, **kwargs):
 
 
 def read_table(book):
+    """function for reading table from xlrd.book object"""
     rows = []
     right = 0
     left = 0
@@ -46,8 +48,6 @@ def read_table(book):
 
     for nrow in range(book.sheet_by_index(0).nrows):
         row = book.sheet_by_index(0).row(nrow)
-        print(row)
-        print('row %d' % nrow)
         cell_list = []
         ncell = 0
         for cell in row:
@@ -69,6 +69,11 @@ def read_table(book):
         if cell_list:
             rows.append((cell_list, nrow))
 
-    create_table(rows, left=left, right=right, top=top, bottom=bottom)
+    return({'rows': rows, 'left': left, 'right': right, 'top': top, 'bottom': bottom})
+    #return(rows, left, right, top, bottom)
 
-read_table(b)
+
+if __name__ == "__main__":
+    xls = input("Enter filename/path_to_file to convert")
+    b = xlrd.open_workbook(xls)
+    create_table(read_table(b))
