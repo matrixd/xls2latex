@@ -6,11 +6,11 @@ b = xlrd.open_workbook(xls)
 
 
 def create_table(rows, **kwargs):
-    table = "\\begin{tabular}{ "
+    table = "\\begin{tabular}{ |"
     width = kwargs.get('right')-kwargs.get('left')
     height = kwargs.get('bottom')-kwargs.get('top')
     for i in range(width):
-        table += '| c | '
+        table += ' c | '
     table += '}\n    '
     for row in rows:
         #proccessing on table rows
@@ -29,9 +29,9 @@ def create_table(rows, **kwargs):
             for k in range(kwargs.get('left') - row[-1][1]):
                     table += ' & '
         table = table[:-2]
-        table += "\\" + "\\" + "\n    "  #row end
+        table += "\\" + "\\" + "\n    \\hline "  #row end
     #closing table
-    table = table[:-4]
+    table = table[:-10]
     table += '\\end{tabular}'
     print(table)
 
