@@ -17,14 +17,21 @@ def create_table(kwargs):
     currow = kwargs.get('top')
     for row in rows:
         #proccessing on table rows
-        row = row[0]
         ncell = kwargs.get('left')
-        for c in row:
-            if c[1] == ncell:
+        for c in row[0]:
+            if not c[1] > ncell and c[1] == ncell:
                 if merged and (currow, ncell) in merged:
                     l = merged[(currow, ncell)][3] - merged[(currow, ncell)][2]
-                    table += '\\multicolumn{' + str(l) + '}{|c|}{' + str(c[0].value) + '}'
-                    ncell += l-2
+                    if l > 1:
+                        table += '\\multicolumn{' + str(l) + '}{|c|}{' + str(c[0].value) + '}'
+                        ncell += l+1
+                        for i in range(ncell - kwargs.get('left')):
+                            table += ' & '
+                    else:
+                        l = merged[(currow, ncell)][1] - merged[(currow, ncell)][0]
+                        if l > 1:
+                            table += '\\multirow{' + str(l) + '}{|c|}{' + str(c[0].value) + '}' + ' & '
+                    ncell += 1
                 else:
                     table += str(c[0].value) + ' & '
 
@@ -34,10 +41,9 @@ def create_table(kwargs):
                     table += ' & '
                     ncell += 1
             ncell += 1
-        if row[-1][1] < kwargs.get('right'):
-            for k in range(kwargs.get('right') - row[-1][1]):
-                    table += ' & '
-        table = table[:-2]
+        if ncell < kwargs.get('right'):
+            for k in range(kwargs.get('right') - ncell):
+                table += ' & '
         table += "\\" + "\\" + "\n    \\hline "  #row end
         currow += 1
 
